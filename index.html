@@ -4,75 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wedding Invitation</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond&family=Dancing+Script&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&family=Cormorant+Garamond&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Cormorant Garamond', serif;
+            background-color: #ffffff;
+            color: #003d5b;
+            text-align: center;
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
-            background-color: #f8f8f8;
         }
-        .envelope {
-            width: 300px;
-            height: 200px;
-            background-image: url('Images/Image9.jpg');
-            background-size: cover;
-            cursor: pointer;
-            margin: auto;
-            position: relative;
-            animation: pop 2s ease-out;
-        }
-        .reveal {
-            display: none;
-            text-align: center;
+        h1 {
             font-family: 'Dancing Script', cursive;
-            color: navy;
-            font-size: 24px;
-            margin-top: 20px;
+            font-size: 3em;
+            color: #c24f4f;
+            animation: fadeIn 2s;
         }
-        .section {
+        @keyframes fadeIn {
+            from {opacity: 0;}
+            to {opacity: 1;}
+        }
+        .invitation {
+            border: 5px solid #003d5b;
             padding: 20px;
-            text-align: center;
-            background-color: white;
+            border-radius: 10px;
+            display: inline-block;
             margin: 20px auto;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
+            background: url('Images/Image9.jpg') no-repeat center;
+            background-size: cover;
+            color: white;
         }
-        img {
-            width: 100%;
+        .details {
+            margin-top: 20px;
+            background: rgba(0, 61, 91, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        img { 
+            width: 200px;
             height: auto;
-            border-radius: 8px;
-        }
-        @keyframes pop {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+            margin: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="envelope" onclick="revealInvitation()"></div>
-    <div class="reveal" id="invitation">
-        <p>You're Invited to Our Wedding</p>
+    <div class="invitation">
+        <h1>You’re Invited to Our Wedding!</h1>
+        <div class="details">
+            <p>Ceremony details:</p>
+            <p>October 3rd, 2026</p>
+            <p>Riverside Estates, Hout Bay, Cape Town</p>
+            <p>RSVP by September 1st to <a href="mailto:hello@terriandnathanael.com">hello@terriandnathanael.com</a></p>
+        </div>
+        <div class="images">
+            <img src="Images/Image5.jpg" alt="Terri and Nathanael 1">
+            <img src="Images/Image6.jpg" alt="Terri and Nathanael 2">
+            <img src="Images/Image7.jpg" alt="Terri and Nathanael 3">
+        </div>
     </div>
-    <div class="section" id="ceremonyDetails">
-        <h2>Ceremony Details</h2>
-        <p>Date: [Insert Wedding Date]</p>
-        <p>Time: [Insert Wedding Time]</p>
-        <p>Location: [Insert Wedding Location]</p>
-    </div>
-    <div class="section">
-        <h2>Meet the Couple</h2>
-        <img src="Images/Image5.jpg" alt="Couple Photo 1">
-        <img src="Images/Image6.jpg" alt="Couple Photo 2">
-        <img src="Images/Image7.jpg" alt="Couple Photo 3">
-    </div>
-    <script>
-        function revealInvitation() {
-            document.getElementById('invitation').style.display = 'block';
-        }
-    </script>
 </body>
 </html>
