@@ -27,7 +27,6 @@
             line-height: 1.7;
         }
 
-        /* --- Audio Toggle Button (Hidden initially) --- */
         #mute-toggle {
             position: fixed; bottom: 20px; right: 20px; z-index: 10000;
             background: rgba(255, 255, 255, 0.8); border: 1px solid var(--navy);
@@ -36,7 +35,6 @@
             font-size: 1.2rem; transition: opacity 0.5s ease; opacity: 0;
         }
 
-        /* --- Envelope --- */
         #envelope {
             position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: center; align-items: center;
             background: linear-gradient(rgba(26, 58, 82, 0.7), rgba(26, 58, 82, 0.7)), 
@@ -44,13 +42,21 @@
             transition: transform 1.2s cubic-bezier(0.7, 0, 0.3, 1);
         }
         #envelope.open { transform: translateY(-100%); }
-        .envelope-content { text-align: center; color: white; }
+        .envelope-content { text-align: center; color: white; padding: 20px; }
+        
         .open-btn {
             margin-top: 25px; padding: 15px 40px; background: transparent; border: 1px solid white;
             color: white; font-family: 'Montserrat'; text-transform: uppercase; letter-spacing: 3px; cursor: pointer;
+            transition: 0.3s;
+        }
+        .open-btn:active { background: white; color: var(--navy); }
+
+        .skip-text {
+            display: block; margin-top: 30px; font-family: 'Montserrat'; font-size: 0.6rem;
+            text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.6);
+            cursor: pointer; text-decoration: none;
         }
 
-        /* --- Content Layout --- */
         .photo-wrap { width: 100vw; height: 100vh; overflow: hidden; position: relative; }
         .photo-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
         .hero-photo { height: 75vh; }
@@ -76,7 +82,6 @@
         .time-line { font-size: 1.1rem; font-family: 'Montserrat'; letter-spacing: 2px; color: var(--navy); font-weight: 500; }
         .address { font-size: 1.1rem; color: #555; margin-top: 20px; line-height: 1.5; }
 
-        /* --- Palette --- */
         .palette-grid {
             display: grid; grid-template-columns: repeat(5, 1fr);
             gap: 10px; margin: 30px auto; max-width: 500px;
@@ -92,7 +97,6 @@
         }
         #gift-info { display: none; margin-top: 25px; background: white; padding: 25px; border: 1px solid #eee; text-align: left; max-width: 320px; margin-inline: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
 
-        /* --- RSVP --- */
         .rsvp-container {
             background: white; padding: 40px 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.05);
             text-align: left; margin-top: 40px; border-radius: 4px;
@@ -111,7 +115,6 @@
 
         .submit-btn { width: 100%; padding: 22px; background: var(--navy); color: white; border: none; font-family: 'Montserrat'; text-transform: uppercase; letter-spacing: 3px; cursor: pointer; font-weight: 600; transition: 0.3s; }
         
-        /* --- Final Message Photo --- */
         .final-photo {
             position: relative; width: 100vw; height: 100vh;
             background: url('https://raw.githubusercontent.com/terriharker47-glitch/wedding-invitation/main/IMG_0506.jpeg') center/cover no-repeat;
@@ -151,7 +154,8 @@
         <div class="envelope-content">
             <h2 style="font-family: 'Dancing Script'; font-size: 3.5rem; margin-bottom: 5px;">Nathanael & Terri</h2>
             <p style="font-family: 'Montserrat'; font-size: 0.7rem; letter-spacing: 4px;">OCTOBER 03, 2026</p>
-            <button class="open-btn" onclick="startExperience()">Open Invitation</button>
+            <button class="open-btn" onclick="startExperience(true)">Open Invitation</button>
+            <span class="skip-text" onclick="startExperience(false)">Skip to Info</span>
         </div>
     </div>
 
@@ -261,7 +265,7 @@
         const muteBtn = document.getElementById('mute-toggle');
         let loops = 0;
 
-        function startExperience() {
+        function startExperience(withAutoScroll) {
             document.getElementById('envelope').classList.add('open');
             music.currentTime = 6;
             music.play();
@@ -278,7 +282,14 @@
                     }
                 } 
             };
-            setTimeout(() => { autoScroll(59000); }, 1200);
+
+            if (withAutoScroll) {
+                setTimeout(() => { autoScroll(59000); }, 1200);
+            } else {
+                document.body.classList.remove('locked');
+                muteBtn.style.display = 'flex';
+                setTimeout(() => { muteBtn.style.opacity = '1'; }, 10);
+            }
         }
 
         function toggleMute() {
@@ -297,9 +308,10 @@
                 if (!start) start = ts;
                 const progress = Math.min((ts - start) / duration, 1);
                 window.scrollTo(0, startY + (targetY - startY) * progress);
-                if (progress < 1) window.requestAnimationFrame(step);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
                 else {
-                    // END OF SCROLL: Enable controls and show mute button
                     document.body.classList.remove('locked');
                     if (loops < 2) { 
                         muteBtn.style.display = 'flex';
