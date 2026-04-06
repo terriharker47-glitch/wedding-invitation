@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Terri & Nathanael Wedding</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=Montserrat:wght@200;300;400;600&family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --burnt-orange: #cc5500;
+            --navy: #1a3a52;
+            --cream: #fdfaf6;
+            --text: #2d2d2d;
+        }
+
+        body.locked { overflow: hidden; touch-action: none; }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            font-family: 'Cormorant Garamond', serif; 
+            background-color: var(--cream); 
+            color: var(--text);
+            overflow-x: hidden;
+            line-height: 1.7;
+        }
+
+        /* --- Audio Toggle Button (Hidden initially) --- */
+        #mute-toggle {
+            position: fixed; bottom: 20px; right: 20px; z-index: 10000;
+            background: rgba(255, 255, 255, 0.8); border: 1px solid var(--navy);
+            width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
+            display: none; align-items: center; justify-content: center;
+            font-size: 1.2rem; transition: opacity 0.5s ease; opacity: 0;
+        }
+
+        /* --- Envelope --- */
+        #envelope {
+            position: fixed; inset: 0; z-index: 9999; display: flex; justify-content: center; align-items: center;
+            background: linear-gradient(rgba(26, 58, 82, 0.7), rgba(26, 58, 82, 0.7)), 
+                        url('https://raw.githubusercontent.com/terriharker47-glitch/wedding-invitation/main/IMG_0517.jpeg') center/cover no-repeat;
+            transition: transform 1.2s cubic-bezier(0.7, 0, 0.3, 1);
+        }
+        #envelope.open { transform: translateY(-100%); }
+        .envelope-content { text-align: center; color: white; }
+        .open-btn {
+            margin-top: 25px; padding: 15px 40px; background: transparent; border: 1px solid white;
+            color: white; font-family: 'Montserrat'; text-transform: uppercase; letter-spacing: 3px; cursor: pointer;
+        }
+
+        /* --- Content Layout --- */
+        .photo-wrap { width: 100vw; height: 100vh; overflow: hidden; position: relative; }
+        .photo-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .hero-photo { height: 75vh; }
+
+        section { padding: 80px 20px; text-align: center; max-width: 800px; margin: 0 auto; }
+        
+        .eyebrow { 
+            font-family: 'Montserrat'; text-transform: uppercase; letter-spacing: 6px; 
+            font-size: 0.75rem; color: var(--burnt-orange); display: block; margin-bottom: 20px; 
+            font-weight: 400;
+        }
+
+        .names-display { 
+            font-family: 'Dancing Script', cursive; font-size: clamp(3.2rem, 10vw, 5rem); 
+            color: var(--navy); margin-bottom: 20px; 
+        }
+
+        .details-box {
+            background-color: #fff; padding: 50px 25px; margin: 30px auto;
+            border: 1px solid rgba(26, 58, 82, 0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        }
+        .date-line { font-size: 1.8rem; margin-bottom: 8px; font-weight: 400; color: var(--text); }
+        .time-line { font-size: 1.1rem; font-family: 'Montserrat'; letter-spacing: 2px; color: var(--navy); font-weight: 500; }
+        .address { font-size: 1.1rem; color: #555; margin-top: 20px; line-height: 1.5; }
+
+        /* --- Palette --- */
+        .palette-grid {
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            gap: 10px; margin: 30px auto; max-width: 500px;
+        }
+        .swatch-wrap { display: flex; flex-direction: column; align-items: center; }
+        .swatch-dot { width: 38px; height: 38px; border-radius: 50%; margin-bottom: 5px; border: 1px solid #eee; }
+        .swatch-name { font-family: 'Montserrat'; font-size: 0.5rem; text-transform: uppercase; color: #999; }
+
+        .gift-btn {
+            background: transparent; color: var(--navy); padding: 15px 30px; 
+            font-family: 'Montserrat'; text-transform: uppercase; letter-spacing: 2px; 
+            font-size: 0.7rem; cursor: pointer; border: 1px solid var(--navy); margin-top: 20px;
+        }
+        #gift-info { display: none; margin-top: 25px; background: white; padding: 25px; border: 1px solid #eee; text-align: left; max-width: 320px; margin-inline: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.02); }
+
+        /* --- RSVP --- */
+        .rsvp-container {
+            background: white; padding: 40px 25px; box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+            text-align: left; margin-top: 40px; border-radius: 4px;
+        }
+        .form-row { margin-bottom: 20px; }
+        label { display: block; font-family: 'Montserrat'; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; font-weight: 600; color: #444; }
+        input, select { width: 100%; padding: 10px 0; border: none; border-bottom: 1px solid #ddd; font-family: inherit; font-size: 1.1rem; outline: none; background: transparent; }
+        
+        #second-guest-wrap { display: none; background: #f8f8f8; padding: 20px; margin-bottom: 20px; border-left: 3px solid var(--burnt-orange); }
+
+        .adult-note {
+            background: #fff5f0; border: 1px dashed var(--burnt-orange); padding: 15px;
+            text-align: center; margin-bottom: 25px; border-radius: 4px;
+        }
+        .adult-note p { font-family: 'Montserrat'; font-size: 0.75rem; letter-spacing: 1px; color: var(--burnt-orange); font-weight: 600; text-transform: uppercase; }
+
+        .submit-btn { width: 100%; padding: 22px; background: var(--navy); color: white; border: none; font-family: 'Montserrat'; text-transform: uppercase; letter-spacing: 3px; cursor: pointer; font-weight: 600; transition: 0.3s; }
+        
+        /* --- Final Message Photo --- */
+        .final-photo {
+            position: relative; width: 100vw; height: 100vh;
+            background: url('https://raw.githubusercontent.com/terriharker47-glitch/wedding-invitation/main/IMG_0506.jpeg') center/cover no-repeat;
+            display: flex; align-items: center; justify-content: center; text-align: center;
+        }
+        .final-photo-overlay {
+            position: absolute; inset: 0;
+            background: linear-gradient(rgba(26, 58, 82, 0.4), rgba(26, 58, 82, 0.4));
+        }
+        .final-message {
+            position: relative; z-index: 10; color: white;
+            padding: 20px; max-width: 600px;
+        }
+        .final-message h3 {
+            font-family: 'Dancing Script', cursive; font-size: clamp(3rem, 10vw, 4.5rem); margin-bottom: 10px;
+        }
+        .final-message p {
+            font-family: 'Montserrat', sans-serif; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 3px; font-weight: 300;
+        }
+
+        @media (max-width: 480px) {
+            .palette-grid { grid-template-columns: repeat(4, 1fr); }
+            section { padding: 60px 15px; }
+            .final-photo { height: 80vh; }
+        }
+    </style>
+</head>
+<body class="locked">
+
+    <audio id="bgMusic" preload="auto">
+        <source src="https://raw.githubusercontent.com/terriharker47-glitch/wedding-invitation/main/Elvis%20Presley%20-%20Can_t%20Help%20Falling%20In%20Love%20(Official%20Audio)(MP3_160K).mp3" type="audio/mpeg">
+    </audio>
+
+    <button id="mute-toggle" onclick="toggleMute()">🔊</button>
+
+    <div id="envelope">
+        <div class="envelope-content">
+            <h2 style="font-family: 'Dancing Script'; font-size: 3.5rem; margin-bottom: 5px;">Terri & Nathanael</h2>
+            <p style="font-family: 'Montserrat'; font-size: 0.7rem; letter-spacing: 4px;">OCTOBER 03, 2026</p>
+            <button class="open-btn" onclick="startExperience()">Open Invitation</button>
+        </div>
+    </div>
+
+    <div class="photo-wrap"><img src="https://raw.githubusercontent.com/terriharker47-glitch/wedding-invitation/main/IMG_0504.jpeg"></div>
+
+    <section>
+        <span class="eyebrow">The Invitation</span>
+        <h1 class="names-display">Terri & Nathanael</h1>
+        <p style="font-size: 1.4rem; font-style: italic; margin-bottom: 30px; color: #444;">Together with our families, we request you to join us to celebrate our wedding.</p>
+
+        <div class="details-box">
+            <span class="eyebrow">The Celebration</span>
+            <p class="date-line">Saturday, 03 October 2026</p>
+            <p class="time-line">Arrival at 2:00 PM | Ceremony at 3:00 PM</p>
+            <div class="address"><strong>Riverside Estates & Conference Center</strong><br>1 Welbevind Way, Hout Bay, Cape Town, 7806</div>
+            <a href="https://share.google/5F6qTp8cVCmqkwZyO" target="_blank" style="display:inline-block; margin-top: 25px; color: var(--navy); text-decoration: none; font-family: 'Montserrat'; font-size: 0.65rem; border-bottom: 1px solid; letter-spacing: 2px;">VIEW GOOGLE MAPS</a>
+        </div>
+    </section>
+
+    <div class="photo-wrap hero-photo"><img src="https://raw.githubusercontent.com/terriharker47-glitch/wedding-invitation/main/IMG_0505.jpeg"></div>
+
+    <section>
+        <span class="eyebrow">Dress Code</span>
+        <h2 class="names-display" style="font-size: 2.8rem;">Autumn Tones</h2>
+        <p style="margin-bottom: 20px;">We kindly invite you to celebrate with us in cocktail attire within our wedding palette:</p>
+
+        <div class="palette-grid">
+            <div class="swatch-wrap"><div class="swatch-dot" style="background:#000000;"></div><span class="swatch-name">Black</span></div>
+            <div class="swatch-wrap"><div class="swatch-dot" style="background:#0d1f2d;"></div><span class="swatch-name">Navy Dk</span></div>
+            <div class="swatch-wrap"><div class="swatch-dot" style="background:#1a3a52;"></div><span class="swatch-name">Navy</span></div>
+            <div class="swatch-wrap"><div class="swatch-dot" style="background:#2a5a82;"></div><span class="swatch-name">Navy Lt</span></div>
+            <div class="swatch-wrap"><div class="swatch-dot" style="background:#8b3a00;"></div><span class="swatch-name">Orng Dk</span></div>
+            <div class="swatch-wrap"><div class="swatch-dot" style="background:#cc5500;"></div><span class="swatch-name">Orange</span></div>
+            <div class="swatch-wrap"><div class="swatch-dot" style="background:#ff7722;"></div><span class="swatch-name">Orng Lt</span></div>
+            <div class="swatch-wrap"><div class="swatch-dot" style="background:#d63031;"></div><span class="swatch-name">Crl Dk</span></div>
+            <div class="swatch-wrap"><div class="swatch-dot" style="background:#ff6b4a;"></div><span class="swatch-name">Coral</span></div>
+            <div class="swatch-wrap"><div class="swatch-dot" style="background:#ff9999;"></div><span class="swatch-name">Crl Lt</span></div>
+            <div class="swatch-wrap"><div class="swatch-dot" style="background:#5a7a6f;"></div><span class="swatch-name">Sage Dk</span></div>
+            <div class="swatch-wrap"><div class="swatch-dot" style="background:#7a9d8f;"></div><span class="swatch-name">Sage</span></div>
+            <div class="swatch-wrap"><div class="swatch-dot" style="background:#9bbfb0;"></div><span class="swatch-name">Sage Lt</span></div>
+            <div class="swatch-wrap"><div class="swatch-dot" style="background:#4a1a1a;"></div><span class="swatch-name">Burg Dk</span></div>
+            <div class="swatch-wrap"><div class="swatch-dot" style="background:#6b3a2d;"></div><span class="swatch-name">Burgundy</span></div>
+            <div class="swatch-wrap"><div class="swatch-dot" style="background:#8b5a47;"></div><span class="swatch-name">Burg Lt</span></div>
+            <div class="swatch-wrap"><div class="swatch-dot" style="background:#a89080;"></div><span class="swatch-name">Tan Dk</span></div>
+            <div class="swatch-wrap"><div class="swatch-dot" style="background:#c4b5a0;"></div><span class="swatch-name">Tan</span></div>
+            <div class="swatch-wrap"><div class="swatch-dot" style="background:#ddd0c0;"></div><span class="swatch-name">Tan Lt</span></div>
+        </div>
+    </section>
+
+    <div class="photo-wrap hero-photo"><img src="https://raw.githubusercontent.com/terriharker47-glitch/wedding-invitation/main/IMG_0508.jpeg"></div>
+
+    <section>
+        <span class="eyebrow">Registry</span>
+        <h2 class="names-display" style="font-size: 2.8rem;">Gifts</h2>
+        <p style="max-width: 500px; margin: 0 auto; color: #555;">Your presence is the greatest gift. If you wish to contribute to our future, our details are below.</p>
+        
+        <button class="gift-btn" onclick="document.getElementById('gift-info').style.display = 'block'; this.style.display='none'">Reveal Account Details</button>
+        <div id="gift-info">
+            <p><strong>FNB Savings Account</strong></p>
+            <p>Account Holder: Terri Harker</p>
+            <p style="font-size: 1.4rem; margin-top: 5px; color: var(--navy);">63182702944</p>
+        </div>
+    </section>
+
+    <div class="photo-wrap hero-photo"><img src="https://raw.githubusercontent.com/terriharker47-glitch/wedding-invitation/main/IMG_0503.jpeg"></div>
+
+    <section id="rsvp">
+        <span class="eyebrow">R.S.V.P</span>
+        <h2 class="names-display" style="font-size: 3rem;">Kindly Respond</h2>
+        <p>Please reply by August 1st, 2026</p>
+
+        <div class="rsvp-container">
+            <form id="rsvp-form">
+                <div class="form-row"><label>Full Name</label><input type="text" name="name" id="main_name" required></div>
+                <div class="form-row"><label>Dietary Restrictions</label><input type="text" name="dietary_primary"></div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="form-row"><label>Attending?</label><select name="attending" required><option value="Yes">Joyfully Accepts</option><option value="No">Regretfully Declines</option></select></div>
+                    <div class="form-row"><label>Total Guests</label><select name="guests" id="guest-select" onchange="toggleGuestField()"><option value="1">1 Person</option><option value="2">2 People</option></select></div>
+                </div>
+
+                <div id="second-guest-wrap">
+                    <div style="margin-bottom: 20px; border-top: 1px solid #eee; padding-top: 20px;"><label>Plus One Name</label><input type="text" name="guest2_name" id="guest2_name"></div>
+                    <div class="form-row"><label>Plus One Dietary</label><input type="text" name="dietary_partner"></div>
+                </div>
+
+                <div class="adult-note">
+                    <p>Kindly note: Adult ceremony and reception</p>
+                </div>
+
+                <button type="submit" class="submit-btn" id="submit-btn">Send My Response</button>
+            </form>
+            <div id="success-msg"></div> 
+        </div>
+    </section>
+
+    <div class="final-photo">
+        <div class="final-photo-overlay"></div>
+        <div class="final-message">
+            <h3>Thank You</h3>
+            <p>We so look forward to celebrating with you</p>
+        </div>
+    </div>
+
+    <script>
+        const music = document.getElementById('bgMusic');
+        const muteBtn = document.getElementById('mute-toggle');
+        let loops = 0;
+
+        function startExperience() {
+            document.getElementById('envelope').classList.add('open');
+            music.currentTime = 6;
+            music.play();
+
+            music.ontimeupdate = function() { 
+                if (music.currentTime >= 65) { 
+                    loops++;
+                    if (loops < 2) {
+                        music.currentTime = 6; 
+                        music.play(); 
+                    } else {
+                        music.pause();
+                        muteBtn.style.display = 'none';
+                    }
+                } 
+            };
+            setTimeout(() => { autoScroll(59000); }, 1200);
+        }
+
+        function toggleMute() {
+            if (music.muted) {
+                music.muted = false; muteBtn.innerText = '🔊';
+            } else {
+                music.muted = true; muteBtn.innerText = '🔇';
+            }
+        }
+
+        function autoScroll(duration) {
+            const startY = window.pageYOffset;
+            const targetY = document.body.scrollHeight - window.innerHeight;
+            let start;
+            window.requestAnimationFrame(function step(ts) {
+                if (!start) start = ts;
+                const progress = Math.min((ts - start) / duration, 1);
+                window.scrollTo(0, startY + (targetY - startY) * progress);
+                if (progress < 1) window.requestAnimationFrame(step);
+                else {
+                    // END OF SCROLL: Enable controls and show mute button
+                    document.body.classList.remove('locked');
+                    if (loops < 2) { 
+                        muteBtn.style.display = 'flex';
+                        setTimeout(() => { muteBtn.style.opacity = '1'; }, 10);
+                    }
+                }
+            });
+        }
+
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.search);
+            const guest = params.get('name');
+            if (guest) { document.getElementById('main_name').value = guest.replace(/_/g, ' '); document.getElementById('main_name').readOnly = true; }
+            if (params.get('limit') === '1') document.getElementById('guest-select').options[1].remove();
+        };
+
+        function toggleGuestField() {
+            const count = document.getElementById('guest-select').value;
+            document.getElementById('second-guest-wrap').style.display = (count === "2") ? 'block' : 'none';
+            document.getElementById('guest2_name').required = (count === "2");
+        }
+
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzVOlN9YWo4UGviYEPOrZhMnmlUun7sgxi-gPz3GV1V_E0RGpbMJPs3v2OnEbwekBFS/exec';
+        const form = document.getElementById('rsvp-form');
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            document.getElementById('submit-btn').disabled = true;
+            fetch(scriptURL, { method: 'POST', body: new FormData(form), mode: 'no-cors' }).then(() => {
+                form.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
