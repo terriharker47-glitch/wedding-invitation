@@ -287,7 +287,7 @@ const scriptURL = 'https://script.google.com/macros/s/AKfycbyuicRO4JsCCWgh96bxuD
 window.onload = function() {
   const params = new URLSearchParams(window.location.search);
   const rawName = params.get('name') || '';
-  const inviteName = rawName.replace(/_/g, ' ');
+  const inviteName = rawName.replace(/%26/g, '&').replace(/_/g, ' ');
   const plusOneAllowed = params.get('limit') !== '1';
 
   document.getElementById('invite_name').value = inviteName;
@@ -301,7 +301,7 @@ window.onload = function() {
   // ── Split invite name into individual people ──
   // Handles: "Lydia & JP", "Renae & Edgar & Aunty Dorothy", "Giovanni"
   const persons = inviteName
-    ? inviteName.split(/\s*[&,]\s*/).map(n => n.trim()).filter(Boolean)
+    ? inviteName.split(/\s*&\s*/).map(n => n.trim()).filter(Boolean)
     : [];
 
   const wrap = document.getElementById('persons-wrap');
